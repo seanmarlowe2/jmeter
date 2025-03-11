@@ -1,0 +1,24 @@
+Initial JMeter Prompt:
+What is open thread group model in jmeter?
+
+...After explanation:
+Would you like a hands-on guide or a JMeter script for this setup? 🚀
+
+You said:
+yes
+ChatGPT said:
+Here's a hands-on guide to setting up an Open Thread Group Model in JMeter using the Arrival Thread Group.
+
+Follow up to original script:
+ChatGPT said:
+Would you like a more advanced version with dynamic variables and CSV parameterization? 🚀
+You said:
+yes
+
+After updated script:
+ChatGPT said:
+Would you like automatic correlation handling for dynamic tokens (e.g., JWT auth tokens)? 🚀
+You said:
+yes
+
+Final version saved as AIOpenThreadGroupVariablesCSV.jmx

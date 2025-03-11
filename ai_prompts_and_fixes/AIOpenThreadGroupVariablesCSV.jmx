@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+    <hashTree>
+        <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Advanced Open Thread Group with Token Handling" enabled="true">
+            <stringProp name="TestPlan.comments">JMeter Open Model Test with JWT Authentication</stringProp>
+            <boolProp name="TestPlan.functional_mode">false</boolProp>
+            <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+            <hashTree>
+                <!-- CSV Data Set Config -->
+                <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+                    <stringProp name="filename">test_data.csv</stringProp>
+                    <stringProp name="variableNames">username,password,endpoint</stringProp>
+                    <stringProp name="delimiter">,</stringProp>
+                    <boolProp name="quotedData">false</boolProp>
+                    <boolProp name="recycle">true</boolProp>
+                    <boolProp name="stopThread">false</boolProp>
+                    <boolProp name="sharingMode">shareMode.all</boolProp>
+                </CSVDataSet>
+
+                <!-- Arrival Thread Group -->
+                <ThreadGroup guiclass="jp@gc.UltimateThreadGroupGui" testclass="ThreadGroup" testname="Arrival Thread Group" enabled="true">
+                    <elementProp name="ultimatethreadgroupdata" elementType="CollectionProperty">
+                        <collectionProp name="ultimatethreadgroupdata">
+                            <elementProp name="1" elementType="com.jayway.jmeter.threads.UltimateThreadGroupRow">
+                                <stringProp name="TargetRate">10</stringProp>
+                                <stringProp name="RampUp">60</stringProp>
+                                <stringProp name="Hold">300</stringProp>
+                                <stringProp name="Shutdown">60</stringProp>
+                            </elementProp>
+                        </collectionProp>
+                    </elementProp>
+                </ThreadGroup>
+
+                <hashTree>
+                    <!-- Login API Request -->
+                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login API Request" enabled="true">
+                        <stringProp name="HTTPSampler.domain">example.com</stringProp>
+                        <stringProp name="HTTPSampler.port">443</stringProp>
+                        <stringProp name="HTTPSampler.protocol">https</stringProp>
+                        <stringProp name="HTTPSampler.path">${endpoint}</stringProp>
+                        <stringProp name="HTTPSampler.method">POST</stringProp>
+                        <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                            <collectionProp name="Arguments.arguments">
+                                <elementProp name="jsonPayload" elementType="HTTPArgument">
+                                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                                    <stringProp name="Argument.value">
+                                        {
+                                            "username": "${username}",
+                                            "password": "${password}"
+                                        }
+                                    </stringProp>
+                                    <stringProp name="Argument.name"/>
+                                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                                </elementProp>
+                            </collectionProp>
+                        </elementProp>
+                        <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                    </HTTPSamplerProxy>
+                    
+                    <hashTree>
+                        <!-- JSON Extractor for Token -->
+                        <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract Auth Token" enabled="true">
+                            <stringProp name="JSONPostProcessor.referenceNames">authToken</stringProp>
+                            <stringProp name="JSONPostProcessor.jsonPathExprs">$.token</stringProp>
+                            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+                            <boolProp name="JSONPostProcessor.computeConcatenation">false</boolProp>
+                        </JSONPostProcessor>
+                    </hashTree>
+
+                    <!-- API Request Using Token -->
+                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Authenticated API Request" enabled="true">
+                        <stringProp name="HTTPSampler.domain">example.com</stringProp>
+                        <stringProp name="HTTPSampler.port">443</stringProp>
+                        <stringProp name="HTTPSampler.protocol">https</stringProp>
+                        <stringProp name="HTTPSampler.path">/api/protected-resource</stringProp>
+                        <stringProp name="HTTPSampler.method">GET</stringProp>
+                    </HTTPSamplerProxy>
+
+                    <hashTree>
+                        <!-- Add Header with Bearer Token -->
+                        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Authorization Header" enabled="true">
+                            <collectionProp name="HeaderManager.headers">
+                                <elementProp name="Authorization" elementType="Header">
+                                    <stringProp name="Header.name">Authorization</stringProp>
+                                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                                </elementProp>
+                            </collectionProp>
+                        </HeaderManager>
+                    </hashTree>
+
+                    <!-- View Results Tree -->
+                    <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+                        <boolProp name="ResultCollector.error_logging">false</boolProp>
+                        <stringProp name="filename"/>
+                    </ResultCollector>
+
+                    <!-- Summary Report -->
+                    <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+                        <boolProp name="ResultCollector.error_logging">false</boolProp>
+                        <stringProp name="filename"/>
+                    </ResultCollector>
+                </hashTree>
+            </hashTree>
+        </TestPlan>
+    </hashTree>
+</jmeterTestPlan>

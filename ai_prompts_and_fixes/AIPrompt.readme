@@ -1,0 +1,3 @@
+This file contains information about prompts and fixes
+
+AIPrompt1 resulted in AIOpenThreadGroupVariablesCSV.jmx which had errors when trying to open in jmeter. CleanOpenThreadGroupVariablesCSV.jmx is the version that I corrected to allow the test to be executable.
